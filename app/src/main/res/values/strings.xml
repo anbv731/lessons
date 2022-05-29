@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">lessons</string>
+    <string name="edit_text_hint">Enter path to image</string>
 </resources>

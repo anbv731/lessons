@@ -17,6 +17,7 @@ import androidx.core.database.getStringOrNull
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lessons.databinding.ContactsBinding
+import com.google.android.material.appbar.MaterialToolbar
 
 
 const val MY_PERMISSION_REQUEST_CONTACTS = 0
@@ -24,6 +25,7 @@ const val MY_PERMISSION_REQUEST_CONTACTS = 0
 class ContactsFragment : Fragment() {
     lateinit var binding: ContactsBinding
     lateinit var contactModelList: MutableList<ContactModel>
+    lateinit var appbar: MaterialToolbar
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,6 +33,10 @@ class ContactsFragment : Fragment() {
     ): View {
         binding = ContactsBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        appbar=binding.topAppBarDetail
+        appbar.setNavigationOnClickListener {
+            requireActivity().onBackPressed()
+        }
         return root
     }
 
@@ -99,7 +105,7 @@ class ContactsFragment : Fragment() {
         }
         phones.close()
         val layoutManager = LinearLayoutManager(requireContext())
-        val adapter = RecyclerAdapter(requireContext(),contactModelList)
+        val adapter = RecyclerAdapter(requireContext(),contactModelList) { position-> toItem(position) }
         binding.recyclerViewContacts.layoutManager = layoutManager
         binding.recyclerViewContacts.adapter = adapter
     }
@@ -142,5 +148,16 @@ class ContactsFragment : Fragment() {
                 getContacts()
             }
         }
+    }
+    private fun toItem(position:Int){
+        val bundle=Bundle()
+        bundle.putString("name",contactModelList[position].name)
+        bundle.putString("number",contactModelList[position].number)
+        val fragment=ContactDetailFragment()
+        fragment.arguments=bundle
+        activity?.supportFragmentManager?.beginTransaction()
+            ?.replace(R.id.placeholder, fragment, null)
+            ?.addToBackStack("detail")
+            ?.commit()
     }
 }

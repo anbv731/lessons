@@ -43,13 +43,29 @@ class ContactsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         contactModelList = mutableListOf()
-            val permission =
-                ActivityCompat.checkSelfPermission(view.context, Manifest.permission.READ_CONTACTS)
-            if (permission == PackageManager.PERMISSION_GRANTED) {
-                getContacts()
-            } else {
-                getContactsPermission()
-            }
+        getFakeContacts(100)
+//            val permission =
+//                ActivityCompat.checkSelfPermission(view.context, Manifest.permission.READ_CONTACTS)
+//            if (permission == PackageManager.PERMISSION_GRANTED) {
+//                getContacts()
+//            } else {
+//                getContactsPermission()
+//            }
+    }
+    private  fun getFakeContacts (number:Int){
+        for (i in 0..number){
+            val name= "00"+i+"00"
+            val secondName="///"+i+"///"
+            val phone="+"+i+i+i+i+i
+            contactModelList.add(i, ContactModel(name,secondName,phone))
+        }
+        println(contactModelList)
+
+        val adapter = RecyclerAdapter(requireContext(),contactModelList) { position-> toItem(position) }
+        binding.recyclerViewContacts.adapter = adapter
+
+
+
     }
 
    fun getContacts() {
@@ -152,7 +168,9 @@ class ContactsFragment : Fragment() {
     private fun toItem(position:Int){
         val bundle=Bundle()
         bundle.putString("name",contactModelList[position].name)
+        bundle.putString("secondName",contactModelList[position].secondName)
         bundle.putString("number",contactModelList[position].number)
+        bundle.putString("position",position.toString())
         val fragment=ContactDetailFragment()
         fragment.arguments=bundle
         activity?.supportFragmentManager?.beginTransaction()
